@@ -1,3 +1,0 @@
-/home/roshanbinoj/Documents/isa-assembler/build/CMakeFiles/isa_tool.dir
-/home/roshanbinoj/Documents/isa-assembler/build/CMakeFiles/edit_cache.dir
-/home/roshanbinoj/Documents/isa-assembler/build/CMakeFiles/rebuild_cache.dir
