@@ -5,48 +5,50 @@
 #include <unordered_map>
 #include <vector>
 
+using namespace std;
+
 class Assembler
 {
 public:
-    bool assembleFile(const std::string &inputPath, std::vector<uint8_t> &outputBytes);
-    bool assembleString(const std::string &source, std::vector<uint8_t> &outputBytes);
-    bool writeBinaryFile(const std::string &outputPath, const std::vector<uint8_t> &bytes) const;
+    bool assembleFile(const string &inputPath, vector<uint8_t> &outputBytes);
+    bool assembleString(const string &source, vector<uint8_t> &outputBytes);
+    bool writeBinaryFile(const string &outputPath, const vector<uint8_t> &bytes) const;
 
-    const std::string &getLastError() const;
+    const string &getLastError() const;
 
 private:
     struct SourceLine
     {
-        std::size_t lineNumber = 0;
-        std::string text;
+        size_t lineNumber = 0;
+        string text;
     };
 
     struct ParsedInstruction
     {
-        std::size_t lineNumber = 0;
+        size_t lineNumber = 0;
         uint16_t address = 0;
-        std::string mnemonic;
-        std::vector<std::string> operands;
+        string mnemonic;
+        vector<string> operands;
     };
 
-    std::string lastError_;
+    string lastError_;
 
-    static std::string trim(const std::string &value);
-    static std::string toUpper(std::string value);
-    static std::string stripComment(const std::string &value);
-    static std::vector<std::string> splitOperands(const std::string &value);
-    static bool parseNumber(const std::string &token, int &value);
-    static bool parseRegister(const std::string &token, uint8_t &index);
+    static string trim(const string &value);
+    static string toUpper(string value);
+    static string stripComment(const string &value);
+    static vector<string> splitOperands(const string &value);
+    static bool parseNumber(const string &token, int &value);
+    static bool parseRegister(const string &token, uint8_t &index);
 
-    std::size_t instructionSize(const ParsedInstruction &instr) const;
+    size_t instructionSize(const ParsedInstruction &instr) const;
     bool firstPass(
-        const std::vector<SourceLine> &lines,
-        std::vector<ParsedInstruction> &instructions,
-        std::unordered_map<std::string, uint16_t> &labels);
+        const vector<SourceLine> &lines,
+        vector<ParsedInstruction> &instructions,
+        unordered_map<string, uint16_t> &labels);
     bool secondPass(
-        const std::vector<ParsedInstruction> &instructions,
-        const std::unordered_map<std::string, uint16_t> &labels,
-        std::vector<uint8_t> &outputBytes);
+        const vector<ParsedInstruction> &instructions,
+        const unordered_map<string, uint16_t> &labels,
+        vector<uint8_t> &outputBytes);
 
-    void setError(const std::string &message);
+    void setError(const string &message);
 };

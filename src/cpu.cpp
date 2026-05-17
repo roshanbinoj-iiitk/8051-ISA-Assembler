@@ -4,12 +4,14 @@
 #include <iostream>
 #include <sstream>
 
+using namespace std;
+
 namespace
 {
-    std::string formatHex(uint32_t value, int width)
+    string formatHex(uint32_t value, int width)
     {
-        std::ostringstream oss;
-        oss << "0x" << std::uppercase << std::hex << std::setw(width) << std::setfill('0') << value;
+        ostringstream oss;
+        oss << "0x" << uppercase << hex << setw(width) << setfill('0') << value;
         return oss.str();
     }
 } // namespace
@@ -31,7 +33,7 @@ void CPU::reset()
     lastError_.clear();
 }
 
-bool CPU::loadProgram(const std::vector<uint8_t> &program, uint16_t baseAddress)
+bool CPU::loadProgram(const vector<uint8_t> &program, uint16_t baseAddress)
 {
     reset();
 
@@ -41,14 +43,14 @@ bool CPU::loadProgram(const std::vector<uint8_t> &program, uint16_t baseAddress)
         return false;
     }
 
-    const std::size_t start = static_cast<std::size_t>(baseAddress);
+    const size_t start = static_cast<size_t>(baseAddress);
     if (start + program.size() > memory_.size())
     {
         setError("Program does not fit in memory.");
         return false;
     }
 
-    for (std::size_t i = 0; i < program.size(); ++i)
+    for (size_t i = 0; i < program.size(); ++i)
     {
         memory_[start + i] = program[i];
     }
@@ -75,7 +77,7 @@ bool CPU::step()
 
     const uint16_t currentPC = PC_;
     const uint8_t opcode = memory_[currentPC];
-    std::string mnemonic;
+    string mnemonic;
 
     // Fetch-Decode-Execute cycle:
     // 1) FETCH opcode at PC
@@ -136,15 +138,15 @@ bool CPU::step()
     {
         if (opcode >= 0x28 && opcode <= 0x2F)
         {
-            const std::size_t index = static_cast<std::size_t>(opcode - 0x28);
+            const size_t index = static_cast<size_t>(opcode - 0x28);
             A_ = static_cast<uint8_t>(A_ + R_[index]);
-            mnemonic = "ADD A,R" + std::to_string(index);
+            mnemonic = "ADD A,R" + to_string(index);
             PC_ = static_cast<uint16_t>(currentPC + 1);
             cycles_ += 1;
             break;
         }
 
-        std::ostringstream oss;
+        ostringstream oss;
         oss << "Unknown opcode " << formatHex(opcode, 2)
             << " at PC=" << formatHex(currentPC, 4);
         setError(oss.str());
@@ -161,14 +163,14 @@ bool CPU::step()
     return true;
 }
 
-bool CPU::run(std::size_t maxSteps)
+bool CPU::run(size_t maxSteps)
 {
     if (!running_)
     {
         running_ = true;
     }
 
-    std::size_t executed = 0;
+    size_t executed = 0;
     while (running_ && executed < maxSteps)
     {
         if (!step())
@@ -197,7 +199,7 @@ bool CPU::isTraceEnabled() const
     return traceEnabled_;
 }
 
-void CPU::setRegister(std::size_t index, uint8_t value)
+void CPU::setRegister(size_t index, uint8_t value)
 {
     if (index < R_.size())
     {
@@ -205,7 +207,7 @@ void CPU::setRegister(std::size_t index, uint8_t value)
     }
 }
 
-uint8_t CPU::getRegister(std::size_t index) const
+uint8_t CPU::getRegister(size_t index) const
 {
     if (index < R_.size())
     {
@@ -234,38 +236,38 @@ bool CPU::isRunning() const
     return running_;
 }
 
-const std::string &CPU::getLastError() const
+const string &CPU::getLastError() const
 {
     return lastError_;
 }
 
-bool CPU::requireBytes(uint16_t address, std::size_t count) const
+bool CPU::requireBytes(uint16_t address, size_t count) const
 {
-    const std::size_t start = static_cast<std::size_t>(address);
+    const size_t start = static_cast<size_t>(address);
     return start + count <= memory_.size();
 }
 
-void CPU::setError(const std::string &message)
+void CPU::setError(const string &message)
 {
     running_ = false;
     lastError_ = message;
 }
 
-void CPU::traceStep(uint16_t pc, uint8_t opcode, const std::string &mnemonic) const
+void CPU::traceStep(uint16_t pc, uint8_t opcode, const string &mnemonic) const
 {
-    std::cout << "PC=" << formatHex(pc, 4)
-              << " OP=" << formatHex(opcode, 2)
-              << " " << mnemonic
-              << " | A=" << formatHex(A_, 2)
-              << " B=" << formatHex(B_, 2)
-              << " R0=" << formatHex(R_[0], 2)
-              << " R1=" << formatHex(R_[1], 2)
-              << " R2=" << formatHex(R_[2], 2)
-              << " R3=" << formatHex(R_[3], 2)
-              << " R4=" << formatHex(R_[4], 2)
-              << " R5=" << formatHex(R_[5], 2)
-              << " R6=" << formatHex(R_[6], 2)
-              << " R7=" << formatHex(R_[7], 2)
-              << " Cycles=" << cycles_
-              << '\n';
+    cout << "PC=" << formatHex(pc, 4)
+         << " OP=" << formatHex(opcode, 2)
+         << " " << mnemonic
+         << " | A=" << formatHex(A_, 2)
+         << " B=" << formatHex(B_, 2)
+         << " R0=" << formatHex(R_[0], 2)
+         << " R1=" << formatHex(R_[1], 2)
+         << " R2=" << formatHex(R_[2], 2)
+         << " R3=" << formatHex(R_[3], 2)
+         << " R4=" << formatHex(R_[4], 2)
+         << " R5=" << formatHex(R_[5], 2)
+         << " R6=" << formatHex(R_[6], 2)
+         << " R7=" << formatHex(R_[7], 2)
+         << " Cycles=" << cycles_
+         << '\n';
 }
